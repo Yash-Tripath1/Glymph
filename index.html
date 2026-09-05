@@ -2,18 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Glymph Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Glymph Studio — We build things people say are too hard to build yet.</title>
 <meta name="description" content="Glymph Studio — an indie dev studio by three college students from India. No templates. Built from scratch. Always shipping." />
 <meta name="theme-color" content="#000000" />
 
-<!-- Open Graph -->
 <meta property="og:title" content="Glymph Studio" />
 <meta property="og:description" content="We build things people say are too hard to build yet. Indie dev studio · India · Est. 2026" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://glymph.studio" />
+<meta property="og:image" content="https://glymph.studio/logo/glymph-logo-sheet.png" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23000'/%3E%3Cpath d='M170 55H45v90h110v-40h-55' fill='none' stroke='%23fff' stroke-width='32'/%3E%3Cpath d='M120 22 68 112h36l-20 68 68-92h-38l14-66Z' fill='%23ff3b2f' stroke='%23000' stroke-width='8'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="logo/glyph-logo-appicon.png" />
+<link rel="icon" type="image/png" href="logo/favicon-512.png" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23000'/%3E%3Cpath fill-rule='nonzero' d='M30%2040H170V70H30Z%20M30%2040H60V160H30Z%20M30%20130H170V160H30Z%20M140%20100H170V160H140Z%20M85%20100H155V130H85Z' fill='%23fff'/%3E%3Cpath d='M109.8%2033.6%2062.3%20112.3H95.1L75.4%20166.4%20137.7%2081.1H103.3L116.4%2033.6Z' fill='%23ff3b2f' stroke='%23000' stroke-width='9' stroke-linejoin='round'/%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,38 +28,76 @@
 <div class="grain" aria-hidden="true"></div>
 <div class="scanlines" aria-hidden="true"></div>
 <canvas id="trail" aria-hidden="true"></canvas>
-<div class="cursor-ring" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"><span></span></div>
+
+<!-- ============ CUSTOM CURSOR ============ -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <div class="cursor__ring"></div>
+  <div class="cursor__bolt">
+    <svg viewBox="0 0 200 200">
+      <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" />
+    </svg>
+  </div>
+  <div class="cursor__label"></div>
+</div>
 
 <!-- ============ PRELOADER ============ -->
 <div class="loader" id="loader">
   <div class="loader__inner">
     <svg class="loader__mark" viewBox="0 0 200 200" aria-hidden="true">
-      <path class="lg-g" d="M170 55H45v90h110v-40h-55" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
-      <path class="lg-bolt" d="M124 20 66 116h40l-24 66 76-104h-42l16-58Z" fill="#ff3b2f" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
+      <path class="lg-g" d="M155 55 H45 V145 H155 V115 H100" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
+      <path class="lg-bolt" d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#ff3b2f" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
     </svg>
     <div class="loader__word">GLYMPH</div>
     <div class="loader__bar"><i></i></div>
-    <div class="loader__status mono">compiling pixels<span class="dots"></span></div>
+    <div class="loader__status mono"><span id="pct">0</span>% &nbsp;<span id="bootmsg">initialising</span><span class="dots"></span></div>
   </div>
 </div>
 
-<!-- ============ NAV ============ -->
-<header class="nav">
-  <a class="nav__brand" href="#top" aria-label="Glymph Studio home">
+<!-- ============ HEADER ============ -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top" aria-label="Glymph Studio — home">
     <svg class="mark mark--sm" viewBox="0 0 200 200" aria-hidden="true">
-      <path d="M170 55H45v90h110v-40h-55" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
-      <path d="M124 20 66 116h40l-24 66 76-104h-42l16-58Z" fill="#ff3b2f" stroke="#000" stroke-width="10" stroke-linejoin="round"/>
+      <path d="M155 55 H45 V145 H155 V115 H100" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
+      <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#ff3b2f" stroke="#000" stroke-width="10" stroke-linejoin="round"/>
     </svg>
     <span>GLYMPH<em>®</em></span>
   </a>
-  <nav class="nav__links mono">
-    <a href="#thesis"><span>01</span> Thesis</a>
-    <a href="#team"><span>02</span> Crew</a>
-    <a href="#work"><span>03</span> Projects</a>
-    <a href="#contact" class="nav__cta">Contact</a>
+
+  <nav class="nav__links mono" aria-label="Primary">
+    <a href="#thesis" data-nav="thesis"><span>01</span> Thesis</a>
+    <a href="#team" data-nav="team"><span>02</span> Crew</a>
+    <a href="#work" data-nav="work"><span>03</span> Projects</a>
+    <a href="#contact" class="nav__cta" data-nav="contact" data-magnetic>Contact</a>
   </nav>
+
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+    <i></i><i></i><i></i>
+  </button>
 </header>
+
+<!-- ============ MOBILE MENU ============ -->
+<div class="menu" id="menu" aria-hidden="true">
+  <div class="menu__inner">
+    <div class="menu__top mono">
+      <span>GLYMPH STUDIO</span>
+      <button class="menu__close mono" id="menuClose" aria-label="Close menu">✕ CLOSE</button>
+    </div>
+    <nav class="menu__nav">
+      <a href="#thesis"><b>01</b> Thesis</a>
+      <a href="#team"><b>02</b> Crew</a>
+      <a href="#work"><b>03</b> Projects</a>
+      <a href="#contact"><b>04</b> Contact</a>
+    </nav>
+    <div class="menu__foot">
+      <a class="mono" href="mailto:glymph.business@gmail.com">glymph.business@gmail.com</a>
+      <div class="mono menu__social">
+        <a href="https://github.com/glymph-studio" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://www.linkedin.com/company/glymph-studio/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <main id="top">
 
@@ -66,29 +106,27 @@
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
 
-    <!-- floating stickers -->
+    <!-- floating (and DRAGGABLE) stickers -->
     <div class="stickers" aria-hidden="true">
-      <!-- terminal -->
-      <div class="sticker sticker--terminal" data-depth="26">
+      <div class="sticker sticker--terminal" data-depth="26" data-cursor="drag">
         <div class="term">
           <div class="term__bar"><i></i><i></i><i></i><span>glyph@studio — zsh</span></div>
           <pre class="term__body mono">$ glyph init
 &gt; booting studio...
 &gt; 3 devs online
 <span class="c-red">▊</span></pre>
+          <span class="dragme mono">↖ drag me</span>
         </div>
       </div>
 
-      <!-- code snippet -->
-      <div class="sticker sticker--code" data-depth="40">
+      <div class="sticker sticker--code" data-depth="40" data-cursor="drag">
         <pre class="code mono"><span class="t-p">&lt;</span><span class="t-t">section</span> <span class="t-a">class</span>=<span class="t-s">"peak"</span><span class="t-p">&gt;</span>
   <span class="t-c">// no templates</span>
   <span class="t-p">&lt;</span><span class="t-t">h1</span><span class="t-p">&gt;</span>GLYMPH<span class="t-p">&lt;/</span><span class="t-t">h1</span><span class="t-p">&gt;</span>
 <span class="t-p">&lt;/</span><span class="t-t">section</span><span class="t-p">&gt;</span></pre>
       </div>
 
-      <!-- comic burst -->
-      <div class="sticker sticker--burst" data-depth="18">
+      <div class="sticker sticker--burst" data-depth="18" data-cursor="drag">
         <div class="burst">
           <svg viewBox="0 0 200 200" aria-hidden="true">
             <path d="M100 4 118 44 160 18 150 62 196 62 158 92 186 128 140 124 148 168 110 140 100 196 90 140 52 168 60 124 14 128 42 92 4 62 50 62 40 18 82 44Z" fill="#ff3b2f" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
@@ -97,8 +135,7 @@
         </div>
       </div>
 
-      <!-- pixel bolt -->
-      <div class="sticker sticker--pixel" data-depth="34">
+      <div class="sticker sticker--pixel" data-depth="34" data-cursor="drag">
         <div class="pxbox">
           <svg viewBox="0 0 112 192" width="66" height="112" aria-hidden="true" fill="#2d5bff">
             <rect x="72" y="8" width="8" height="8"/><rect x="64" y="16" width="24" height="8"/><rect x="56" y="24" width="32" height="8"/><rect x="48" y="32" width="40" height="8"/><rect x="40" y="40" width="48" height="8"/><rect x="32" y="48" width="64" height="8"/><rect x="32" y="56" width="64" height="8"/><rect x="24" y="64" width="72" height="8"/><rect x="16" y="72" width="80" height="8"/><rect x="8" y="80" width="88" height="8"/><rect x="0" y="88" width="112" height="8"/><rect x="0" y="96" width="112" height="8"/><rect x="40" y="104" width="72" height="8"/><rect x="40" y="112" width="72" height="8"/><rect x="40" y="120" width="64" height="8"/><rect x="32" y="128" width="64" height="8"/><rect x="32" y="136" width="56" height="8"/><rect x="32" y="144" width="48" height="8"/><rect x="24" y="152" width="40" height="8"/><rect x="24" y="160" width="32" height="8"/><rect x="24" y="168" width="16" height="8"/><rect x="16" y="176" width="16" height="8"/><rect x="16" y="184" width="8" height="8"/>
@@ -106,8 +143,7 @@
         </div>
       </div>
 
-      <!-- est badge -->
-      <div class="sticker sticker--est" data-depth="22">
+      <div class="sticker sticker--est" data-depth="22" data-cursor="drag">
         <div class="est">
           <div class="est__top mono">INDIE DEV STUDIO</div>
           <div class="est__mid">EST.<br>2026</div>
@@ -115,16 +151,14 @@
         </div>
       </div>
 
-      <!-- barcode label -->
-      <div class="sticker sticker--label" data-depth="30">
+      <div class="sticker sticker--label" data-depth="30" data-cursor="drag">
         <div class="tag mono">
           <span class="tag__x">✕</span> NO TEMPLATES
           <div class="tag__bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         </div>
       </div>
 
-      <!-- rotating badge -->
-      <div class="sticker sticker--spin" data-depth="12">
+      <div class="sticker sticker--spin" data-depth="12" data-cursor="drag">
         <div class="spin">
           <svg viewBox="0 0 200 200" aria-hidden="true">
             <defs><path id="circlePath" d="M100,100 m-72,0 a72,72 0 1,1 144,0 a72,72 0 1,1 -144,0"/></defs>
@@ -135,8 +169,7 @@
         </div>
       </div>
 
-      <!-- comic panel sticker -->
-      <div class="sticker sticker--panel" data-depth="20">
+      <div class="sticker sticker--panel" data-depth="20" data-cursor="drag">
         <div class="minipanel">
           <div class="minipanel__t mono">ISSUE #01</div>
           <div class="minipanel__b">
@@ -148,16 +181,11 @@
       </div>
     </div>
 
-    <!-- hero content -->
     <div class="hero__inner">
-      <div class="hero__eyebrow mono">
-        <span class="dot"></span> INDIE DEV STUDIO — VARANASI / INDIA
-      </div>
-
       <div class="hero__logo">
         <svg class="mark mark--xl" viewBox="0 0 200 200" aria-hidden="true">
-          <path class="mk-g" d="M170 55H45v90h110v-40h-55" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
-          <path class="mk-bolt" d="M124 20 66 116h40l-24 66 76-104h-42l16-58Z" fill="#ff3b2f" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
+          <path class="mk-g" d="M155 55 H45 V145 H155 V115 H100" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
+          <path class="mk-bolt" d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#ff3b2f" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
         </svg>
       </div>
 
@@ -165,9 +193,7 @@
         <span class="char">G</span><span class="char">L</span><span class="char">Y</span><span class="char">M</span><span class="char">P</span><span class="char">H</span>
       </h1>
 
-      <p class="hero__sub mono">
-        <span>three college students</span><span class="sep">/</span><span>one studio</span><span class="sep">/</span><span>no limits</span>
-      </p>
+      <p class="hero__sub mono"><span>3 people</span><span class="sep">/</span><span>1 studio</span><span class="sep">/</span><span>0 templates</span></p>
     </div>
 
     <div class="hero__scroll mono" aria-hidden="true">
@@ -178,13 +204,13 @@
 
   <!-- ============ MARQUEE ============ -->
   <div class="marquee" aria-hidden="true">
-    <div class="marquee__track">
+    <div class="marquee__track" data-marquee>
       <span>Built from scratch <b>·</b> No templates <b>·</b> 3 guys from India <b>·</b> Always shipping <b>·</b> Est. 2026 <b>·</b></span>
       <span>Built from scratch <b>·</b> No templates <b>·</b> 3 guys from India <b>·</b> Always shipping <b>·</b> Est. 2026 <b>·</b></span>
     </div>
   </div>
   <div class="marquee marquee--thin" aria-hidden="true">
-    <div class="marquee__track marquee__track--rev">
+    <div class="marquee__track marquee__track--rev" data-marquee>
       <span>Hand-coded <b>✦</b> Pixel by pixel <b>✦</b> Ship it ugly <b>✦</b> Fix it fast <b>✦</b> Repeat forever <b>✦</b></span>
       <span>Hand-coded <b>✦</b> Pixel by pixel <b>✦</b> Ship it ugly <b>✦</b> Fix it fast <b>✦</b> Repeat forever <b>✦</b></span>
     </div>
@@ -201,13 +227,12 @@
   <section class="section team" id="team">
     <div class="shead">
       <span class="shead__num mono">02 / CREW</span>
-      <h2 class="shead__title" data-reveal>THE<br>CHARACTERS</h2>
+      <h2 class="shead__title" data-split>THE<br>CHARACTERS</h2>
       <p class="shead__note mono">three people. three roles. zero excuses.</p>
     </div>
 
     <div class="panels">
-      <!-- Yashh -->
-      <article class="panel" data-tilt>
+      <article class="panel" data-cursor="hey">
         <div class="panel__no mono">01</div>
         <div class="panel__frame">
           <div class="avatar">
@@ -216,24 +241,23 @@
                 <rect width="200" height="200" fill="#0a0a0a"/>
                 <circle cx="100" cy="78" r="34" fill="none" stroke="#fff" stroke-width="6"/>
                 <path d="M32 180c0-38 30-58 68-58s68 20 68 58" fill="none" stroke="#fff" stroke-width="6"/>
-                <path d="M124 18 66 116h40l-24 66 76-104h-42l16-58Z" fill="#ff3b2f" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
+                <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#ff3b2f" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
               </svg>
               <span class="avatar__hint mono">photo<br>soon</span>
             </div>
-            <img src="assets/team/yashh.jpg" alt="Yashh Tripathi" loading="lazy" onerror="this.remove()" />
+            <img src="assets/team/anadi.jpg" alt="Anadi" loading="lazy" onerror="this.remove()" />
           </div>
           <span class="halftone" aria-hidden="true"></span>
         </div>
         <div class="panel__body">
-          <h3 class="panel__name">Yashh<br>Tripathi</h3>
+          <h3 class="panel__name">Anadi</h3>
           <p class="panel__role mono"><span class="tagdot tagdot--red"></span>Founder &amp; CTO</p>
           <p class="panel__quote">“Builds from the kernel up”</p>
         </div>
         <div class="panel__tape" aria-hidden="true"></div>
       </article>
 
-      <!-- Umaid -->
-      <article class="panel" data-tilt>
+      <article class="panel" data-cursor="hey">
         <div class="panel__no mono">02</div>
         <div class="panel__frame">
           <div class="avatar">
@@ -242,7 +266,7 @@
                 <rect width="200" height="200" fill="#0a0a0a"/>
                 <circle cx="100" cy="78" r="34" fill="none" stroke="#fff" stroke-width="6"/>
                 <path d="M32 180c0-38 30-58 68-58s68 20 68 58" fill="none" stroke="#fff" stroke-width="6"/>
-                <path d="M124 18 66 116h40l-24 66 76-104h-42l16-58Z" fill="#2d5bff" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
+                <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#2d5bff" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
               </svg>
               <span class="avatar__hint mono">photo<br>soon</span>
             </div>
@@ -258,8 +282,7 @@
         <div class="panel__tape panel__tape--b" aria-hidden="true"></div>
       </article>
 
-      <!-- Abhinav -->
-      <article class="panel" data-tilt>
+      <article class="panel" data-cursor="hey">
         <div class="panel__no mono">03</div>
         <div class="panel__frame">
           <div class="avatar">
@@ -268,7 +291,7 @@
                 <rect width="200" height="200" fill="#0a0a0a"/>
                 <circle cx="100" cy="78" r="34" fill="none" stroke="#fff" stroke-width="6"/>
                 <path d="M32 180c0-38 30-58 68-58s68 20 68 58" fill="none" stroke="#fff" stroke-width="6"/>
-                <path d="M124 18 66 116h40l-24 66 76-104h-42l16-58Z" fill="#fff" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
+                <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#fff" stroke="#000" stroke-width="7" stroke-linejoin="round"/>
               </svg>
               <span class="avatar__hint mono">photo<br>soon</span>
             </div>
@@ -292,13 +315,12 @@
   <section class="section work" id="work">
     <div class="shead">
       <span class="shead__num mono">03 / PROJECTS</span>
-      <h2 class="shead__title" data-reveal>IN THE<br>LAB</h2>
-      <p class="shead__note mono">hover to flip <span class="sep">/</span> everything&apos;s cooking <span class="sep">/</span> nothing&apos;s cooked yet</p>
+      <h2 class="shead__title" data-split>IN THE<br>LAB</h2>
+      <p class="shead__note mono">hover to flip <span class="sep">/</span> tap on mobile <span class="sep">/</span> nothing&apos;s cooked yet</p>
     </div>
 
     <div class="cards">
-      <!-- card 1 -->
-      <article class="card" data-flip tabindex="0">
+      <article class="card" data-flip tabindex="0" data-cursor="flip">
         <div class="card__inner">
           <div class="face face--front">
             <span class="halftone" aria-hidden="true"></span>
@@ -315,13 +337,12 @@
             <div class="card__top mono"><span>STACK</span><span>2026</span></div>
             <ul class="chips mono"><li>Rust</li><li>WASM</li><li>C</li><li>Linux</li></ul>
             <p class="card__desc mono">Rewriting how small machines think. Fast, tiny, mean.</p>
-            <a class="card__link mono" href="#" data-locked>Case study <span>↗</span></a>
+            <a class="card__link mono" href="#" data-locked data-cursor="soon">Case study <span>↗</span></a>
           </div>
         </div>
       </article>
 
-      <!-- card 2 -->
-      <article class="card" data-flip tabindex="0">
+      <article class="card" data-flip tabindex="0" data-cursor="flip">
         <div class="card__inner">
           <div class="face face--front">
             <span class="halftone" aria-hidden="true"></span>
@@ -338,13 +359,12 @@
             <div class="card__top mono"><span>STACK</span><span>2026</span></div>
             <ul class="chips mono"><li>Canvas</li><li>WebGL</li><li>TypeScript</li></ul>
             <p class="card__desc mono">Panels, ink, halftone dots. Render a comic in the browser.</p>
-            <a class="card__link mono" href="#" data-locked>Case study <span>↗</span></a>
+            <a class="card__link mono" href="#" data-locked data-cursor="soon">Case study <span>↗</span></a>
           </div>
         </div>
       </article>
 
-      <!-- card 3 -->
-      <article class="card" data-flip tabindex="0">
+      <article class="card" data-flip tabindex="0" data-cursor="flip">
         <div class="card__inner">
           <div class="face face--front">
             <span class="halftone" aria-hidden="true"></span>
@@ -361,13 +381,12 @@
             <div class="card__top mono"><span>STACK</span><span>2026</span></div>
             <ul class="chips mono"><li>Go</li><li>WebRTC</li><li>Redis</li></ul>
             <p class="card__desc mono">Sub-100ms or it didn&apos;t happen.</p>
-            <a class="card__link mono" href="#" data-locked>Case study <span>↗</span></a>
+            <a class="card__link mono" href="#" data-locked data-cursor="soon">Case study <span>↗</span></a>
           </div>
         </div>
       </article>
 
-      <!-- mystery card -->
-      <article class="card card--mystery">
+      <article class="card card--mystery" data-cursor="shh">
         <div class="card__inner">
           <div class="face face--front">
             <span class="halftone" aria-hidden="true"></span>
@@ -387,43 +406,44 @@
   <!-- ============ 5. CONTACT ============ -->
   <section class="section contact" id="contact">
     <span class="shead__num mono">04 / CONTACT</span>
-    <h2 class="contact__title">Build something<br>with us.</h2>
+    <h2 class="contact__title" data-split>Build something<br>with us.</h2>
 
-    <a class="mail" href="mailto:glymph.business@gmail.com" data-copy="glymph.business@gmail.com">
+    <a class="mail" href="mailto:glymph.business@gmail.com" data-copy="glymph.business@gmail.com" data-magnetic data-cursor="copy">
       <span class="mail__text">glymph.business@gmail.com</span>
       <span class="mail__ico" aria-hidden="true">↗</span>
     </a>
     <span class="mail__copied mono" aria-hidden="true">copied to clipboard</span>
 
     <div class="socials mono">
-      <a href="https://github.com/glymph-studio" target="_blank" rel="noopener">GitHub <span>↗</span></a>
+      <a href="https://github.com/glymph-studio" target="_blank" rel="noopener" data-magnetic data-cursor="open">GitHub <span>↗</span></a>
       <span class="vbar"></span>
-      <a href="https://www.linkedin.com/company/glymph-studio/" target="_blank" rel="noopener">LinkedIn <span>↗</span></a>
+      <a href="https://www.linkedin.com/company/glymph-studio/" target="_blank" rel="noopener" data-magnetic data-cursor="open">LinkedIn <span>↗</span></a>
     </div>
 
     <div class="contact__mark" aria-hidden="true">
       <svg viewBox="0 0 200 200">
-        <path d="M170 55H45v90h110v-40h-55" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="square"/>
-        <path d="M124 20 66 116h40l-24 66 76-104h-42l16-58Z" fill="#ff3b2f" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
+        <path d="M155 55 H45 V145 H155 V115 H100" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
+        <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#ff3b2f" stroke="#000" stroke-width="9" stroke-linejoin="round"/>
       </svg>
     </div>
   </section>
 
   <footer class="foot">
-    <div class="foot__l mono">© <span id="year">2026</span> GLYMPH STUDIO — ALL RIGHTS RESERVED</div>
+    <div class="foot__l mono">© <span id="year">2026</span> GLYMPH STUDIO</div>
     <div class="foot__c mono">
       <svg class="mark mark--xs" viewBox="0 0 200 200" aria-hidden="true">
-        <path d="M170 55H45v90h110v-40h-55" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
-        <path d="M124 20 66 116h40l-24 66 76-104h-42l16-58Z" fill="#ff3b2f" stroke="#000" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M155 55 H45 V145 H155 V115 H100" fill="none" stroke="currentColor" stroke-width="30" stroke-linecap="square"/>
+        <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#ff3b2f" stroke="#000" stroke-width="10" stroke-linejoin="round"/>
       </svg>
     </div>
-    <div class="foot__r mono">MADE IN INDIA <span class="ac-red">♥</span> FROM SCRATCH</div>
+    <button class="foot__r mono" id="toTop" data-cursor="up">BACK TO TOP <span>↑</span></button>
   </footer>
 </main>
 
 <!-- libs -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
 <script src="main.js" defer></script>
 </body>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340">
+  <defs><mask id="k"><rect width="200" height="200" fill="#fff"/><path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#000"/></mask></defs>
+  <rect width="920" height="340" fill="#000000"/>
+  <rect x="20" y="20" width="260" height="260" fill="#111111" stroke="#2a2a2a" stroke-width="2"/>
+  <g transform="translate(50,50)">  <path fill-rule="nonzero" d="M30 40H170V70H30Z M30 40H60V160H30Z M30 130H170V160H30Z M140 100H170V160H140Z M85 100H155V130H85Z" fill="#FFFFFF"/>
+  <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#FF3B2F" stroke="#000000" stroke-width="9" stroke-linejoin="round"/></g>
+  <text x="150" y="308" font-family="monospace" font-size="15" fill="#8c8c8c" text-anchor="middle">on dark</text>
+  <rect x="320" y="20" width="260" height="260" fill="#F2F2F2" stroke="#2a2a2a" stroke-width="2"/>
+  <g transform="translate(350,50)">  <path fill-rule="nonzero" d="M30 40H170V70H30Z M30 40H60V160H30Z M30 130H170V160H30Z M140 100H170V160H140Z M85 100H155V130H85Z" fill="#000000"/>
+  <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#FF3B2F" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round"/></g>
+  <text x="450" y="308" font-family="monospace" font-size="15" fill="#8c8c8c" text-anchor="middle">on light</text>
+  <rect x="620" y="20" width="260" height="260" fill="#000000" stroke="#2a2a2a" stroke-width="2"/>
+  <g transform="translate(650,50)"><path fill-rule="nonzero" d="M30 40H170V70H30Z M30 40H60V160H30Z M30 130H170V160H30Z M140 100H170V160H140Z M85 100H155V130H85Z" fill="#FFFFFF" mask="url(#k)"/></g>
+  <text x="750" y="308" font-family="monospace" font-size="15" fill="#8c8c8c" text-anchor="middle">mono / on dark</text>
+</svg>

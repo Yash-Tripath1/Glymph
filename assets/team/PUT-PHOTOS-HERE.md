@@ -3,7 +3,7 @@
 Same filename, any extension you update in `index.html`:
 
 ```
-assets/team/yashh.jpg     →  Yashh Tripathi
+assets/team/anadi.jpg     →  Anadi
 assets/team/umaid.jpg     →  Umaid
 assets/team/abhinav.jpg   →  Abhinav
 ```
@@ -14,7 +14,7 @@ The site ships with illustrated placeholders. The moment a real file exists at t
 replaces the placeholder automatically — no code change needed:
 
 ```html
-<img src="assets/team/yashh.jpg" alt="Yashh Tripathi" loading="lazy" onerror="this.remove()" />
+<img src="assets/team/anadi.jpg" alt="Anadi" loading="lazy" onerror="this.remove()" />
 ```
 
 To use a different extension (`.png`, `.webp`), just edit the `src` in `index.html`.

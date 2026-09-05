@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Glymph Studio app icon">
+  <title>Glymph Studio app icon</title>
+  <rect width="200" height="200" fill="#000000"/>
+  <path fill-rule="nonzero" d="M30 40H170V70H30Z M30 40H60V160H30Z M30 130H170V160H30Z M140 100H170V160H140Z M85 100H155V130H85Z" fill="#FFFFFF"/>
+  <path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#FF3B2F" stroke="#000000" stroke-width="9" stroke-linejoin="round"/>
+</svg>
