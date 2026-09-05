@@ -99,6 +99,58 @@
   </div>
 </div>
 
+<!-- ============ TERMINAL OVERLAY ============ -->
+<div class="terminal-overlay" id="terminalOverlay" aria-hidden="true" role="dialog" aria-label="Glymph Terminal">
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-controls">
+        <span class="terminal-dot terminal-dot--close" aria-hidden="true"></span>
+        <span class="terminal-dot terminal-dot--min" aria-hidden="true"></span>
+        <span class="terminal-dot terminal-dot--max" aria-hidden="true"></span>
+      </div>
+      <div class="terminal-title mono">glyph@studio:~$</div>
+      <button class="terminal-close mono" id="terminalClose" aria-label="Close terminal">✕</button>
+    </div>
+    <div class="terminal-output" id="terminalOutput" aria-live="polite" aria-atomic="false">
+      <div class="terminal-line">
+        <span class="terminal-prompt mono">glyph@studio:~$</span>
+        <span class="terminal-welcome mono">Welcome to Glymph Terminal v1.0.0</span>
+      </div>
+      <div class="terminal-line">
+        <span class="terminal-prompt mono">glyph@studio:~$</span>
+        <span class="terminal-hint mono">Type <span class="ac-red">help</span> for available commands</span>
+      </div>
+    </div>
+    <div class="terminal-input-wrapper">
+      <span class="terminal-prompt mono">glyph@studio:~$</span>
+      <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Terminal command input" placeholder="Type a command...">
+      <span class="terminal-cursor" aria-hidden="true">▊</span>
+    </div>
+  </div>
+  <div class="terminal-shortcuts" id="terminalShortcuts" aria-hidden="true">
+    <div class="shortcuts-content mono">
+      <span class="shortcuts-title">KEYBOARD SHORTCUTS</span>
+      <div class="shortcuts-grid">
+        <div class="shortcut"><kbd>Ctrl</kbd>+<kbd>K</kbd><span>Open terminal</span></div>
+        <div class="shortcut"><kbd>T</kbd><span>Open terminal</span></div>
+        <div class="shortcut"><kbd>G</kbd><span>Sticker bounce</span></div>
+        <div class="shortcut"><kbd>K</kbd><span>Sticker scatter</span></div>
+        <div class="shortcut"><kbd>C</kbd><span>CRT mode toggle</span></div>
+        <div class="shortcut"><kbd>?</kbd> / <kbd>/</kbd><span>Show this help</span></div>
+        <div class="shortcut"><kbd>Esc</kbd><span>Close overlays</span></div>
+        <div class="shortcut"><kbd>↑</kbd>/<kbd>↓</kbd><span>Command history</span></div>
+        <div class="shortcut"><kbd>Konami</kbd><span>Secret unlock</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FLOATING TERMINAL BUTTON ============ -->
+<button class="terminal-fab" id="terminalFab" aria-label="Open terminal" data-cursor="open">
+  <span class="terminal-fab__icon" aria-hidden="true">$_</span>
+  <span class="terminal-fab__pulse" aria-hidden="true"></span>
+</button>
+
 <main id="top">
 
   <!-- ============ 1. HERO ============ -->
@@ -221,6 +273,72 @@
     <h2 class="thesis__line">
       <span class="line"><span class="word">We</span> <span class="word">build</span> <span class="word">things</span> <span class="word">people</span> <span class="word">say</span> <span class="word">are</span> <span class="word">too</span> <span class="word">hard</span> <span class="word">to</span> <span class="word">build</span> <span class="word ac">yet.</span></span>
     </h2>
+  </section>
+
+  <!-- ============ 2.5. WHAT IS GLYMPH? ============ -->
+  <section class="section about" id="about">
+    <div class="shead">
+      <span class="shead__num mono">01.5 / ABOUT</span>
+      <h2 class="shead__title" data-split>WHAT IS<br>GLYMPH?</h2>
+    </div>
+
+    <div class="about__grid">
+      <article class="about__card">
+        <div class="about__card-header mono">
+          <span class="about__icon">🏢</span>
+          <span class="about__tag">INDIE DEV STUDIO</span>
+        </div>
+        <div class="about__card-body">
+          <p class="about__text">Founded <span class="ac-red">2026</span> in Varanasi, India by three college students who got tired of saying "someone should build this." So we did.</p>
+          <pre class="about__code mono"><span class="t-k">const</span> <span class="t-v">studio</span> = {
+  <span class="t-a">founded</span>: <span class="t-s">'2026'</span>,
+  <span class="t-a">location</span>: <span class="t-s">'India'</span>,
+  <span class="t-a">team</span>: <span class="t-n">3</span>,
+  <span class="t-a">sleep</span>: <span class="t-n">0</span>
+};</pre>
+        </div>
+      </article>
+
+      <article class="about__card">
+        <div class="about__card-header mono">
+          <span class="about__icon">⚡</span>
+          <span class="about__tag">NO TEMPLATES</span>
+        </div>
+        <div class="about__card-body">
+          <p class="about__text">Every pixel, every line, hand-coded from scratch. We don't copy-paste. We don't use generators. We <span class="ac-red">build</span>.</p>
+          <pre class="about__code mono"><span class="t-c">// our workflow</span>
+<span class="t-k">while</span> (<span class="t-v">true</span>) {
+  <span class="t-f">ship</span>(<span class="t-s">'ugly'</span>);
+  <span class="t-f">fix</span>(<span class="t-s">'fast'</span>);
+  <span class="t-f">repeat</span>();
+}</pre>
+        </div>
+      </article>
+
+      <article class="about__card">
+        <div class="about__card-header mono">
+          <span class="about__icon">🚀</span>
+          <span class="about__tag">ALWAYS SHIPPING</span>
+        </div>
+        <div class="about__card-body">
+          <p class="about__text">We move fast. We ship broken. We fix it in production. Real projects solving real problems, not portfolio fluff.</p>
+          <div class="about__counter mono">
+            <div class="counter-item">
+              <span class="counter-num" data-count="3">3</span>
+              <span class="counter-label">devs</span>
+            </div>
+            <div class="counter-item">
+              <span class="counter-num">∞</span>
+              <span class="counter-label">coffee</span>
+            </div>
+            <div class="counter-item">
+              <span class="counter-num" data-count="0">0</span>
+              <span class="counter-label">templates</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
   </section>
 
   <!-- ============ 3. TEAM ============ -->

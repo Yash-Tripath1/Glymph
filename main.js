@@ -105,12 +105,15 @@
      4. STICKERS — wrap, float, parallax, DRAG
      --------------------------------------------------------- */
   const stickers = $$('.sticker');
+  console.log('Found stickers:', stickers.length);
+
   stickers.forEach((s) => {
     const drag = document.createElement('div');
     drag.className = 'sticker__drag';
     while (s.firstChild) drag.appendChild(s.firstChild);
     s.appendChild(drag);
   });
+  console.log('Sticker wrappers created');
 
   if (hasGSAP && !reduced) {
     // gentle float (on the artwork, so dragging can own the wrapper)
@@ -139,8 +142,17 @@
       }, { passive: true });
     }
 
-    // DRAG IT
-    if (window.Draggable) {
+    // DRAG IT - with fallback check
+    const initDraggable = () => {
+      if (!window.Draggable) {
+        console.warn('Draggable not loaded yet, retrying...');
+        setTimeout(initDraggable, 100);
+        return;
+      }
+
+      console.log('Draggable is available, initializing...');
+      gsap.registerPlugin(window.Draggable);
+
       const hint = $('.dragme');
       stickers.forEach((s) => {
         const drag = s.querySelector('.sticker__drag');
@@ -149,13 +161,15 @@
 
         window.Draggable.create(drag, {
           type: 'x,y',
-          bounds: '.hero',
-          edgeResistance: .72,
+          bounds: 'body', // Changed from '.hero' to allow more movement
+          edgeResistance: .65,
           dragClickables: true,
-          minimumMovement: 3,
-          zIndexBoost: false,
-          allowNativeTouchScrolling: true,
+          minimumMovement: 2,
+          zIndexBoost: true,
+          inertia: true,
+          allowNativeTouchScrolling: false,
           onPress() {
+            console.log('Sticker pressed!');
             stickers.forEach((o) => { o.style.zIndex = ''; });
             s.style.zIndex = 60;
             s.classList.add('is-dragging');
@@ -173,15 +187,23 @@
             gsap.to(inner, { scale: 1, duration: .6, ease: 'elastic.out(1,.55)' });
             gsap.to(inner, { rotation: '+=6', duration: .13, yoyo: true, repeat: 1, ease: 'sine.inOut' });
             // hand-rolled momentum (InertiaPlugin is a paid plugin)
-            const tx = d.x + vx * 7, ty = d.y + vy * 7;
+            const tx = d.x + vx * 5, ty = d.y + vy * 5;
             gsap.to(drag, {
-              x: Number.isFinite(d.minX) ? clamp(d.minX, d.maxX, tx) : tx,
-              y: Number.isFinite(d.minY) ? clamp(d.minY, d.maxY, ty) : ty,
-              duration: 1, ease: 'power3.out'
+              x: tx,
+              y: ty,
+              duration: 0.8, ease: 'power2.out'
             });
           }
         });
       });
+    };
+
+    // Try to initialize draggable
+    if (window.Draggable) {
+      initDraggable();
+    } else {
+      console.log('Draggable not available yet, waiting...');
+      setTimeout(initDraggable, 200);
     }
   } else {
     $$('.dragme').forEach((h) => h.remove());
@@ -548,23 +570,819 @@
   toTop && toTop.addEventListener('click', () => scrollTo(0));
 
   /* ---------------------------------------------------------
-     14. MISC
+     14. TERMINAL SYSTEM
      --------------------------------------------------------- */
-  const y = $('#year');
-  if (y) y.textContent = new Date().getFullYear();
+  const terminalOverlay = $('#terminalOverlay');
+  const terminalInput = $('#terminalInput');
+  const terminalOutput = $('#terminalOutput');
+  const terminalClose = $('#terminalClose');
+  const terminalFab = $('#terminalFab');
+  const terminalSticker = $('.sticker--terminal');
 
-  // easter egg: press G
-  if (hasGSAP && !reduced) {
-    window.addEventListener('keydown', (e) => {
-      if (e.key.toLowerCase() !== 'g' || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-      stickers.forEach((s, i) => {
-        const inner = s.querySelector('.sticker__drag > *');
-        if (inner) gsap.to(inner, { y: -46, duration: .28, yoyo: true, repeat: 1, ease: 'power2.out', delay: i * .035 });
+  let terminalHistory = [];
+  let historyIndex = -1;
+  let isTerminalOpen = false;
+
+  const commands = {
+    help: () => `<span class="info">Available commands:
+  help      - show this help
+  whoami    - who are you?
+  coffee    - brew some coffee
+  ping      - test connection
+  sudo      - try elevated access
+  ls        - list files
+  cat       - read a file
+  git       - check git status
+  npm       - run dev server
+  clear     - clear terminal
+  exit      - close terminal</span>`,
+
+    whoami: () => `<span class="success">You're a visitor. We're Glymph. Nice to meet you.</span>`,
+
+    coffee: () => `<span class="ascii">
+    (  (
+     )  )
+  ........
+  |      |]
+  \\      /
+   \`----'
+</span><span class="success">☕ Coffee brewed! +10 productivity</span>`,
+
+    ping: () => {
+      const latency = Math.floor(Math.random() * 50);
+      return `<span class="success">PONG! 3 devs online. ${latency}ms latency to coffee machine.</span>`;
+    },
+
+    'ping glymph.studio': () => commands.ping(),
+
+    sudo: (args) => {
+      if (args.includes('make me a sandwich')) {
+        return `<span class="error">Nice try. Make it yourself.</span>`;
+      }
+      return `<span class="error">sudo: access denied. You're not in the sudoers file. This incident will be reported.</span>`;
+    },
+
+    ls: () => `<span class="info">volt.rs
+halftone.ts
+signal.go
+README.md
+coffee.sh
+dreams.txt</span>`,
+
+    cat: (args) => {
+      if (args.includes('README.md') || args.includes('readme')) {
+        return `<span class="success"># GLYMPH STUDIO
+
+We build things people say are too hard to build yet.
+
+## Mission
+No templates. No shortcuts. Just three devs from India
+shipping code that shouldn't exist.
+
+## Status
+⚡ Always shipping
+🚀 Never sleeping
+☕ Forever caffeinated</span>`;
+      }
+      if (args.includes('dreams.txt')) {
+        return `<span class="info">- Make Rust run in a browser (wait, WASM did that)
+- Build a comic engine (we're on it)
+- Sub-100ms realtime (working on it)
+- Change the world (in progress...)</span>`;
+      }
+      return `<span class="error">cat: ${args[0] || 'file'}: No such file or directory</span>`;
+    },
+
+    git: (args) => {
+      if (args.includes('status')) {
+        return `<span class="info">On branch main
+Your branch is ahead of 'origin/main' by ∞ commits.
+
+Changes to be committed:
+  modified:   everything.js
+
+Untracked files:
+  sleep.log (404: not found)
+
+3 developers ahead of sleep.</span>`;
+      }
+      return `<span class="info">git version 2.42.0</span>`;
+    },
+
+    'git status': () => commands.git(['status']),
+
+    npm: (args) => {
+      if (args.includes('run') || args.includes('dev') || args.includes('start')) {
+        return new Promise(resolve => {
+          addTerminalLine('info', '> glymph@1.0.0 dev');
+          addTerminalLine('info', '> vite --host');
+          setTimeout(() => {
+            addTerminalLine('success', '⚡ Server running on caffeine:3000');
+            resolve('');
+          }, 800);
+        });
+      }
+      return `<span class="info">npm v10.2.0</span>`;
+    },
+
+    'npm run dev': () => commands.npm(['run', 'dev']),
+    'npm start': () => commands.npm(['start']),
+
+    clear: () => {
+      terminalOutput.innerHTML = '';
+      return null;
+    },
+
+    exit: () => {
+      closeTerminal();
+      return null;
+    }
+  };
+
+  function addTerminalLine(type, text) {
+    const line = document.createElement('div');
+    line.className = `terminal-line ${type}`;
+    const prompt = document.createElement('span');
+    prompt.className = 'terminal-prompt mono';
+    prompt.textContent = 'glyph@studio:~$';
+    const content = document.createElement('span');
+    content.className = 'mono';
+    content.innerHTML = text;
+    line.appendChild(prompt);
+    line.appendChild(content);
+    terminalOutput.appendChild(line);
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+  }
+
+  async function executeCommand(input) {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+
+    // Echo command
+    addTerminalLine('', `<span style="color:#fff">${trimmed}</span>`);
+    terminalHistory.unshift(trimmed);
+    historyIndex = -1;
+
+    // Parse command
+    const parts = trimmed.split(' ');
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+
+    // Find matching command
+    const fullCmd = trimmed.toLowerCase();
+    let result = null;
+
+    if (commands[fullCmd]) {
+      result = commands[fullCmd](args);
+    } else if (commands[cmd]) {
+      result = commands[cmd](args);
+    } else {
+      result = `<span class="error">command not found: ${cmd}. Type 'help' for available commands.</span>`;
+    }
+
+    // Handle promise results
+    if (result instanceof Promise) {
+      await result;
+    } else if (result !== null) {
+      const line = document.createElement('div');
+      line.className = 'terminal-line';
+      line.innerHTML = result;
+      terminalOutput.appendChild(line);
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+  }
+
+  function openTerminal() {
+    if (isTerminalOpen) return;
+    isTerminalOpen = true;
+    terminalOverlay.classList.add('is-open');
+    terminalOverlay.setAttribute('aria-hidden', 'false');
+    setTimeout(() => {
+      terminalInput.focus();
+    }, 300);
+  }
+
+  function closeTerminal() {
+    isTerminalOpen = false;
+    terminalOverlay.classList.remove('is-open');
+    terminalOverlay.setAttribute('aria-hidden', 'true');
+    terminalInput.blur();
+  }
+
+  // Terminal event listeners
+  if (terminalInput) {
+    terminalInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executeCommand(terminalInput.value);
+        terminalInput.value = '';
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex < terminalHistory.length - 1) {
+          historyIndex++;
+          terminalInput.value = terminalHistory[historyIndex];
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+          historyIndex--;
+          terminalInput.value = terminalHistory[historyIndex];
+        } else if (historyIndex === 0) {
+          historyIndex = -1;
+          terminalInput.value = '';
+        }
+      }
+    });
+  }
+
+  terminalClose && terminalClose.addEventListener('click', closeTerminal);
+  terminalFab && terminalFab.addEventListener('click', openTerminal);
+  terminalSticker && terminalSticker.addEventListener('click', openTerminal);
+
+  // Click outside to close
+  terminalOverlay && terminalOverlay.addEventListener('click', (e) => {
+    if (e.target === terminalOverlay) closeTerminal();
+  });
+
+  /* ---------------------------------------------------------
+     15. EASTER EGGS
+     --------------------------------------------------------- */
+
+  // Konami code detector
+  const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let konamiIndex = 0;
+
+  function triggerKonami() {
+    if (!hasGSAP || reduced) return;
+    showAchievement('🎮', 'KONAMI UNLOCKED', 'You found the secret!');
+
+    stickers.forEach((s, i) => {
+      const inner = s.querySelector('.sticker__drag');
+      if (!inner) return;
+
+      // Explode outward
+      const angle = (i / stickers.length) * Math.PI * 2;
+      const distance = 400;
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+
+      gsap.to(inner, {
+        x, y,
+        rotation: Math.random() * 720 - 360,
+        scale: 0.5,
+        duration: 0.8,
+        ease: 'power2.out',
+        onComplete: () => {
+          // Reassemble
+          gsap.to(inner, {
+            x: 0, y: 0, rotation: 0, scale: 1,
+            duration: 1.2,
+            ease: 'elastic.out(1, 0.5)',
+            delay: 0.3
+          });
+        }
       });
     });
   }
 
+  // Type "glymph" detector
+  let typedString = '';
+  let typedTimeout;
+
+  function checkTypedString(char) {
+    clearTimeout(typedTimeout);
+    typedString += char.toLowerCase();
+    if (typedString.includes('glymph')) {
+      showAchievement('⚡', 'EASTER EGG FOUND', 'You typed the magic word!');
+      typedString = '';
+    }
+    typedTimeout = setTimeout(() => {
+      typedString = '';
+    }, 2000);
+  }
+
+  // Achievement toast
+  function showAchievement(icon, title, desc) {
+    let toast = $('.achievement-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'achievement-toast';
+      toast.innerHTML = `
+        <div class="achievement-toast__icon">${icon}</div>
+        <div class="achievement-toast__content">
+          <div class="achievement-toast__title">${title}</div>
+          <div class="achievement-toast__desc">${desc}</div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+    } else {
+      toast.querySelector('.achievement-toast__icon').textContent = icon;
+      toast.querySelector('.achievement-toast__title').textContent = title;
+      toast.querySelector('.achievement-toast__desc').textContent = desc;
+    }
+
+    setTimeout(() => toast.classList.add('is-visible'), 100);
+    setTimeout(() => toast.classList.remove('is-visible'), 4000);
+  }
+
+  // Shortcuts overlay
+  let shortcutsOverlay = null;
+  function toggleShortcutsOverlay() {
+    if (!shortcutsOverlay) {
+      shortcutsOverlay = document.createElement('div');
+      shortcutsOverlay.className = 'shortcuts-overlay';
+      shortcutsOverlay.innerHTML = `
+        <div class="shortcuts-overlay__content">
+          <h2 class="shortcuts-overlay__title">KEYBOARD SHORTCUTS</h2>
+          <p class="shortcuts-overlay__subtitle mono">press ESC to close</p>
+          <div class="shortcuts-overlay__grid">
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>Ctrl</kbd><kbd>K</kbd></div>
+              <div class="shortcuts-overlay__desc">Open Terminal</div>
+            </div>
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>T</kbd></div>
+              <div class="shortcuts-overlay__desc">Open Terminal</div>
+            </div>
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>G</kbd></div>
+              <div class="shortcuts-overlay__desc">Sticker Bounce</div>
+            </div>
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>K</kbd></div>
+              <div class="shortcuts-overlay__desc">Sticker Scatter</div>
+            </div>
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>C</kbd></div>
+              <div class="shortcuts-overlay__desc">CRT Mode Toggle</div>
+            </div>
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>?</kbd><span style="color:#666"> / </span><kbd>/</kbd></div>
+              <div class="shortcuts-overlay__desc">Show This Help</div>
+            </div>
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>↑↑↓↓←→←→BA</kbd></div>
+              <div class="shortcuts-overlay__desc">Konami Code</div>
+            </div>
+            <div class="shortcuts-overlay__item">
+              <div class="shortcuts-overlay__keys"><kbd>ESC</kbd></div>
+              <div class="shortcuts-overlay__desc">Close Overlays</div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(shortcutsOverlay);
+
+      shortcutsOverlay.addEventListener('click', (e) => {
+        if (e.target === shortcutsOverlay) {
+          shortcutsOverlay.classList.remove('is-visible');
+        }
+      });
+    }
+
+    const isVisible = shortcutsOverlay.classList.contains('is-visible');
+    if (isVisible) {
+      shortcutsOverlay.classList.remove('is-visible');
+    } else {
+      shortcutsOverlay.classList.add('is-visible');
+    }
+  }
+
+  // CRT mode toggle
+  let crtMode = false;
+  function toggleCRT() {
+    crtMode = !crtMode;
+    document.body.classList.toggle('crt-mode', crtMode);
+  }
+
+  // Footer year easter egg
+  let yearClicks = 0;
+  const yearEl = $('#year');
+  if (yearEl) {
+    yearEl.addEventListener('click', () => {
+      yearClicks++;
+      if (yearClicks >= 5) {
+        yearEl.textContent = '∞';
+        showAchievement('♾️', 'INFINITY MODE', 'Time is just a construct');
+        yearClicks = 0;
+      }
+    });
+  }
+
+  // Triple-click logo
+  const heroLogo = $('.hero__logo');
+  let logoClickCount = 0;
+  let logoClickTimer;
+  if (heroLogo && hasGSAP && !reduced) {
+    heroLogo.addEventListener('click', () => {
+      logoClickCount++;
+      clearTimeout(logoClickTimer);
+
+      if (logoClickCount === 3) {
+        const colors = ['#ff3b2f', '#2d5bff', '#00e5ff', '#fff'];
+        let colorIndex = 0;
+
+        gsap.to(heroLogo, {
+          rotation: 360,
+          duration: 1,
+          ease: 'back.out(1.5)',
+          onUpdate: () => {
+            if (Math.floor(gsap.getProperty(heroLogo, 'rotation') / 90) > colorIndex) {
+              colorIndex++;
+              heroLogo.style.color = colors[colorIndex % colors.length];
+            }
+          },
+          onComplete: () => {
+            gsap.set(heroLogo, { rotation: 0 });
+            setTimeout(() => { heroLogo.style.color = ''; }, 500);
+          }
+        });
+
+        logoClickCount = 0;
+      } else {
+        logoClickTimer = setTimeout(() => {
+          logoClickCount = 0;
+        }, 500);
+      }
+    });
+  }
+
+  // Double-click stickers to backflip
+  if (hasGSAP && !reduced) {
+    stickers.forEach((s) => {
+      s.addEventListener('dblclick', () => {
+        const inner = s.querySelector('.sticker__drag > *');
+        if (inner) {
+          gsap.to(inner, {
+            rotationX: 360,
+            duration: 0.6,
+            ease: 'back.out(1.5)',
+            onComplete: () => {
+              gsap.set(inner, { rotationX: 0 });
+            }
+          });
+        }
+      });
+    });
+  }
+
+  // Cursor shake detection for rainbow trail
+  let lastMouseX = 0, lastMouseY = 0, shakeCount = 0, shakeTimer;
+  let rainbowMode = false;
+  window.addEventListener('mousemove', (e) => {
+    const dx = Math.abs(e.clientX - lastMouseX);
+    const dy = Math.abs(e.clientY - lastMouseY);
+
+    if (dx > 100 || dy > 100) {
+      shakeCount++;
+      if (shakeCount > 5 && !rainbowMode) {
+        rainbowMode = true;
+        document.documentElement.style.setProperty('--trail-hue', '0');
+
+        let hue = 0;
+        const rainbowInterval = setInterval(() => {
+          hue = (hue + 5) % 360;
+          document.documentElement.style.setProperty('--trail-hue', hue.toString());
+        }, 50);
+
+        setTimeout(() => {
+          clearInterval(rainbowInterval);
+          rainbowMode = false;
+          document.documentElement.style.removeProperty('--trail-hue');
+        }, 3000);
+      }
+
+      clearTimeout(shakeTimer);
+      shakeTimer = setTimeout(() => {
+        shakeCount = 0;
+      }, 500);
+    }
+
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+  }, { passive: true });
+
+  // Idle timer - stickers drift to center
+  let idleTimer;
+  function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      if (hasGSAP && !reduced) {
+        stickers.forEach((s, i) => {
+          gsap.to(s, {
+            x: 0,
+            y: 0,
+            duration: 2,
+            ease: 'power2.inOut',
+            delay: i * 0.1
+          });
+        });
+      }
+    }, 30000);
+  }
+
+  ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
+    window.addEventListener(event, resetIdleTimer, { passive: true });
+  });
+  resetIdleTimer();
+
+  // Master keyboard handler
+  window.addEventListener('keydown', (e) => {
+    // Ignore if typing in input
+    if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      return;
+    }
+
+    const key = e.key.toLowerCase();
+
+    // Konami code
+    if (konamiCode[konamiIndex] === e.key || konamiCode[konamiIndex] === key) {
+      konamiIndex++;
+      if (konamiIndex === konamiCode.length) {
+        triggerKonami();
+        konamiIndex = 0;
+      }
+    } else {
+      konamiIndex = 0;
+    }
+
+    // Type detector
+    if (key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      checkTypedString(key);
+    }
+
+    // Escape key - close all overlays
+    if (e.key === 'Escape') {
+      closeTerminal();
+      if (shortcutsOverlay) shortcutsOverlay.classList.remove('is-visible');
+      const menu = $('#menu');
+      if (menu && menu.classList.contains('is-open')) {
+        closeMenu();
+      }
+      return;
+    }
+
+    // Ignore modified keys for single-key shortcuts
+    if (e.metaKey || e.altKey) return;
+
+    // Ctrl/Cmd+K - open terminal
+    if ((e.ctrlKey || e.metaKey) && key === 'k') {
+      e.preventDefault();
+      openTerminal();
+      return;
+    }
+
+    // Single key shortcuts
+    if (e.ctrlKey) return;
+
+    switch (key) {
+      case 't':
+        openTerminal();
+        break;
+      case 'k':
+        if (hasGSAP && !reduced) {
+          stickers.forEach((s) => {
+            const inner = s.querySelector('.sticker__drag');
+            if (inner) {
+              const angle = Math.random() * Math.PI * 2;
+              const distance = 300 + Math.random() * 200;
+              const x = Math.cos(angle) * distance;
+              const y = Math.sin(angle) * distance;
+
+              gsap.to(inner, {
+                x, y,
+                rotation: Math.random() * 360,
+                duration: 0.5,
+                ease: 'power2.out',
+                onComplete: () => {
+                  gsap.to(inner, {
+                    x: 0, y: 0, rotation: 0,
+                    duration: 1,
+                    ease: 'elastic.out(1, 0.6)',
+                    delay: 0.2
+                  });
+                }
+              });
+            }
+          });
+        }
+        break;
+      case 'c':
+        toggleCRT();
+        break;
+      case '?':
+      case '/':
+        toggleShortcutsOverlay();
+        break;
+    }
+  });
+
+  /* ---------------------------------------------------------
+     16. HERO PARTICLE SYSTEM
+     --------------------------------------------------------- */
+  const heroSection = $('.hero');
+  let particleCanvas, particleCtx, particles = [];
+
+  if (heroSection && !reduced) {
+    particleCanvas = document.createElement('canvas');
+    particleCanvas.id = 'heroParticles';
+    heroSection.insertBefore(particleCanvas, heroSection.firstChild);
+    particleCtx = particleCanvas.getContext('2d');
+
+    function resizeParticleCanvas() {
+      const rect = heroSection.getBoundingClientRect();
+      particleCanvas.width = rect.width;
+      particleCanvas.height = rect.height;
+    }
+
+    resizeParticleCanvas();
+    window.addEventListener('resize', resizeParticleCanvas);
+
+    // Create particles
+    class Particle {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * particleCanvas.height;
+      }
+
+      reset() {
+        this.x = Math.random() * particleCanvas.width;
+        this.y = -10;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = Math.random() * 0.3 + 0.2;
+        this.size = Math.random() * 4 + 2; // Bigger particles
+        this.opacity = Math.random() * 0.7 + 0.5; // More opaque
+        this.type = Math.random() > 0.7 ? 'shape' : 'dot';
+        this.shape = Math.floor(Math.random() * 3); // 0=square, 1=triangle, 2=circle
+        this.color = ['#fff', '#ff3b2f', '#2d5bff'][Math.floor(Math.random() * 3)];
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.y > particleCanvas.height + 10) {
+          this.reset();
+        }
+        if (this.x < -10 || this.x > particleCanvas.width + 10) {
+          this.vx *= -1;
+        }
+      }
+
+      draw() {
+        particleCtx.save();
+        particleCtx.globalAlpha = this.opacity;
+        particleCtx.fillStyle = this.color;
+
+        if (this.type === 'dot') {
+          particleCtx.beginPath();
+          particleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          particleCtx.fill();
+        } else {
+          particleCtx.translate(this.x, this.y);
+          particleCtx.beginPath();
+
+          if (this.shape === 0) {
+            // Square
+            particleCtx.rect(-this.size, -this.size, this.size * 2, this.size * 2);
+          } else if (this.shape === 1) {
+            // Triangle
+            particleCtx.moveTo(0, -this.size);
+            particleCtx.lineTo(this.size, this.size);
+            particleCtx.lineTo(-this.size, this.size);
+          } else {
+            // Circle
+            particleCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+          }
+
+          particleCtx.fill();
+        }
+
+        particleCtx.restore();
+      }
+    }
+
+    // Initialize particles
+    for (let i = 0; i < 100; i++) { // More particles
+      particles.push(new Particle());
+    }
+
+    console.log('Particle system initialized with 100 particles');
+
+    // Animation loop
+    let particleOpacity = 1;
+    function animateParticles() {
+      particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+
+      // Fade out based on scroll
+      const scrollProgress = Math.min(window.scrollY / window.innerHeight, 1);
+      particleOpacity = 1 - scrollProgress;
+      particleCanvas.style.opacity = particleOpacity;
+
+      if (particleOpacity > 0) {
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+      }
+
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+  }
+
+  /* ---------------------------------------------------------
+     17. ENHANCED ANIMATIONS
+     --------------------------------------------------------- */
+
+  // Wordmark letter hover enhancement
+  const wordmarkChars = $$('.wordmark .char');
+  wordmarkChars.forEach((char) => {
+    if (!hasGSAP || reduced) return;
+
+    char.addEventListener('mouseenter', () => {
+      gsap.to(char, {
+        scale: 1.15,
+        color: '#00e5ff',
+        duration: 0.3,
+        ease: 'back.out(2)'
+      });
+    });
+
+    char.addEventListener('mouseleave', () => {
+      gsap.to(char, {
+        scale: 1,
+        color: '#fff',
+        duration: 0.5,
+        ease: 'elastic.out(1, 0.5)'
+      });
+    });
+  });
+
+  // Thesis "yet" glitch effect
+  const yetWord = $('.thesis__line .ac');
+  if (yetWord) {
+    yetWord.setAttribute('data-text', 'yet.');
+    yetWord.classList.add('glitch');
+
+    yetWord.addEventListener('mouseenter', () => {
+      yetWord.classList.add('is-active');
+    });
+
+    yetWord.addEventListener('mouseleave', () => {
+      yetWord.classList.remove('is-active');
+    });
+  }
+
+  // Email typewriter effect
+  const mailLink = $('.mail');
+  if (mailLink && hasGSAP && ST && !reduced) {
+    ST.create({
+      trigger: mailLink,
+      start: 'top 90%',
+      once: true,
+      onEnter: () => {
+        setTimeout(() => {
+          mailLink.classList.add('typewriter-done');
+        }, 3000);
+      }
+    });
+  }
+
+  // Scroll progress color transitions
+  if (hasGSAP && ST && !reduced) {
+    const progressBar = $('.progress span');
+    if (progressBar) {
+      ST.create({
+        trigger: 'body',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          if (progress < 0.25) {
+            progressBar.style.background = '#ff3b2f';
+          } else if (progress < 0.5) {
+            progressBar.style.background = '#2d5bff';
+          } else if (progress < 0.75) {
+            progressBar.style.background = '#00e5ff';
+          } else {
+            progressBar.style.background = '#fff';
+          }
+        }
+      });
+    }
+  }
+
+  /* ---------------------------------------------------------
+     18. MISC
+     --------------------------------------------------------- */
+  const y = $('#year');
+  if (y) y.textContent = new Date().getFullYear();
+
+  // Update console message
   console.log('%c GLYMPH STUDIO ', 'background:#ff3b2f;color:#000;font-weight:700;letter-spacing:.2em;padding:4px 8px');
-  console.log('%c drag the stickers. press G. built from scratch.', 'color:#8c8c8c');
+  console.log('%c drag stickers · press G, K, C, T, ? · type "glymph" · ↑↑↓↓←→←→BA · triple-click logo ', 'color:#8c8c8c');
+  console.log('%c', 'font-size:1px;padding:20px 100px;background:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cGF0aCBkPSJNMTU1IDU1IEg0NSBWMTQ1IEgxNTUgVjExNSBIMTAwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMzAiLz48cGF0aCBkPSJNMTA5LjggMzMuNiA2Mi4zIDExMi4zSDk1LjFMNzUuNCAxNjYuNCAxMzcuNyA4MS4xSDEwMy4zTDExNi40IDMzLjZaIiBmaWxsPSIjZmYzYjJmIi8+PC9zdmc+) no-repeat');
 })();
