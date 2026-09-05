@@ -105,7 +105,6 @@
      4. STICKERS — wrap, float, parallax, DRAG
      --------------------------------------------------------- */
   const stickers = $$('.sticker');
-  console.log('Found stickers:', stickers.length);
 
   stickers.forEach((s) => {
     const drag = document.createElement('div');
@@ -113,7 +112,6 @@
     while (s.firstChild) drag.appendChild(s.firstChild);
     s.appendChild(drag);
   });
-  console.log('Sticker wrappers created');
 
   if (hasGSAP && !reduced) {
     // gentle float (on the artwork, so dragging can own the wrapper)
@@ -143,14 +141,21 @@
     }
 
     // DRAG IT - with fallback check
+    let dragAttempts = 0;
     const initDraggable = () => {
       if (!window.Draggable) {
-        console.warn('Draggable not loaded yet, retrying...');
+        // FIX: this used to reschedule itself every 100ms FOREVER when the CDN
+        // was blocked, spinning a timer for the lifetime of the page.
+        // Give up after ~3s instead.
+        if (++dragAttempts >= 30) {
+          console.warn('[glymph] Draggable never loaded — stickers stay static.');
+          $$('.dragme').forEach((h) => h.remove());
+          return;
+        }
         setTimeout(initDraggable, 100);
         return;
       }
 
-      console.log('Draggable is available, initializing...');
       gsap.registerPlugin(window.Draggable);
 
       const hint = $('.dragme');
@@ -166,10 +171,11 @@
           dragClickables: true,
           minimumMovement: 2,
           zIndexBoost: true,
-          inertia: true,
+          // FIX: `inertia: true` needs InertiaPlugin (paid Club GSAP). It was
+          // never loaded, so GSAP logged a warning and ignored it. Momentum is
+          // hand-rolled in onRelease below, so the flag only added noise.
           allowNativeTouchScrolling: false,
           onPress() {
-            console.log('Sticker pressed!');
             stickers.forEach((o) => { o.style.zIndex = ''; });
             s.style.zIndex = 60;
             s.classList.add('is-dragging');
@@ -202,7 +208,6 @@
     if (window.Draggable) {
       initDraggable();
     } else {
-      console.log('Draggable not available yet, waiting...');
       setTimeout(initDraggable, 200);
     }
   } else {
@@ -1267,7 +1272,6 @@ Untracked files:
       particles.push(new Particle());
     }
 
-    console.log('Particle system initialized with 100 particles');
 
     // Animation loop
     let particleOpacity = 1;

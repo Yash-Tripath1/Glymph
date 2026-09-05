@@ -266,7 +266,20 @@ body.menu-open .burger i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
   background:radial-gradient(ellipse at center,rgba(45,91,255,.16),transparent 62%),
              radial-gradient(ellipse at 70% 30%,rgba(255,59,47,.10),transparent 60%);
 }
-.hero__inner{position:relative;z-index:3;text-align:center;width:100%}
+/* FIX: .hero__inner is a full-width transparent block stacked ABOVE .stickers
+   (z-index 3 vs 2). It was invisible but still swallowed every click over the
+   middle of the hero — on wide screens it covered 47-63% of the area and made
+   the burst/pixel/est stickers impossible to drag. Clicks now pass through it;
+   the only genuinely interactive bits opt back in below. */
+.hero__inner{position:relative;z-index:3;text-align:center;width:100%;pointer-events:none}
+
+/* the actual interactive bits inside the hero text block:
+   - the logo svg keeps the triple-click easter egg
+   - the letters keep the per-letter hover lift
+   (pointer-events:auto on a descendant of a none-element IS hittable,
+    and events still bubble up to .hero__logo's listener) */
+.hero__logo .mark,
+.wordmark .char{pointer-events:auto}
 
 .hero__logo{display:flex;justify-content:center;margin-bottom:2px;color:#fff}
 .hero__logo .mark--xl{filter:drop-shadow(0 0 30px rgba(255,59,47,.35))}
@@ -699,10 +712,15 @@ body.menu-open .burger i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
   font-family:var(--mono);font-size:1.1rem;font-weight:700;color:#fff;
   text-shadow:0 2px 4px rgba(0,0,0,.3);
 }
+/* FIX: the ripple ring is decorative but it was hit-testable, and because it
+   is inset:-4px it sat ON TOP of the button's own footprint and of whatever was
+   underneath. It blocked the est sticker at 1366x768 and the pixel sticker in
+   landscape. Purely visual -> let pointer events through. */
 .terminal-fab__pulse{
   position:absolute;inset:-4px;border-radius:50%;
   border:2px solid var(--red);
   animation:fabRipple 2s ease-out infinite;
+  pointer-events:none;
 }
 @keyframes fabPulse{
   0%,100%{box-shadow:0 8px 32px rgba(255,59,47,.4),0 0 0 4px rgba(255,59,47,.15)}
@@ -936,4 +954,67 @@ body.crt-mode::before{
 @media (max-width:760px){
   .grain{display:none}
 }
+
+/* ============================================================
+   LANDSCAPE / SHORT SCREENS — phone held sideways
+   Every breakpoint above keys off WIDTH, so an 844x390 phone matched
+   the "tablet" rules and got a cramped layout: the hero forced 100svh
+   with ~164px of padding (it overflowed to 417px), and the 2-column
+   card grid made each project card 502px tall — taller than the whole
+   390px viewport. Measured dead zone: 68%.
+   These rules key off HEIGHT instead, so they fix it properly.
+   ============================================================ */
+@media (orientation:landscape) and (max-height:560px){
+
+  /* hero — shrink the type stack so it fits without overflowing */
+  .hero{padding:clamp(40px,7vh,64px) var(--pad) clamp(30px,5vh,48px)}
+  .hero__logo{margin-bottom:0}
+  .hero__logo .mark--xl{width:clamp(40px,5.5vw,58px)}
+  .wordmark{font-size:clamp(1.75rem,5.6vh,3rem);line-height:.86}
+  .hero__sub{margin-top:8px;font-size:.52rem;letter-spacing:.18em}
+  .hero__scroll{bottom:8px;gap:5px}
+  .hero__scroll-line{height:20px}
+
+  /* keep the hero uncluttered — only the two corner stickers survive */
+  .sticker--panel,.sticker--spin,.sticker--code,
+  .sticker--est,.sticker--label,.sticker--pixel{display:none}
+  .sticker--terminal{left:2%;top:5%;transform:scale(.6)}
+  .sticker--burst{left:2%;top:60%;transform:scale(.58)}
+
+  /* nothing may be taller than the screen — back to 4 across */
+  .cards{grid-template-columns:repeat(4,1fr);gap:12px}
+  .card{aspect-ratio:1/1}
+  .face{padding:11px}
+  .card__name{font-size:clamp(.95rem,2vw,1.3rem)}
+  .card__one{font-size:.55rem;margin-top:5px}
+  .card__desc{font-size:.58rem;line-height:1.5}
+  .card__badge{font-size:.5rem;padding:4px 7px}
+  .chips{gap:4px}
+  .chips li{font-size:.5rem;padding:3px 6px}
+  .card__link{font-size:.55rem}
+  .card__hint{bottom:-19px;font-size:.5rem}
+  .card__corner{width:24px;height:24px}
+
+  .panels{grid-template-columns:repeat(3,1fr);gap:12px}
+  .panel{padding:10px;box-shadow:7px 7px 0 var(--blue)}
+  /* max-width:none is required — the max-width:900px block above sets
+     1 column + max-width:420px, which at 844px wide left 132px columns
+     and made each about card 474px tall (taller than the screen). */
+  .about__grid{grid-template-columns:repeat(3,1fr);gap:12px;max-width:none}
+  .about__card{padding:16px;box-shadow:5px 5px 0 var(--red)}
+  .about__card:nth-child(2){box-shadow:5px 5px 0 var(--blue)}
+  .about__card:nth-child(3){box-shadow:5px 5px 0 #fff}
+  .about__code{font-size:.5rem;line-height:1.6;padding:10px}
+
+  /* sections — trim the tall vertical padding */
+  .section{padding:clamp(36px,6vh,56px) var(--pad)}
+  .thesis{min-height:auto;padding:clamp(36px,6vh,56px) var(--pad)}
+  .thesis__line{font-size:clamp(1.3rem,4.2vh,2.6rem)}
+  .contact{padding-block:clamp(36px,6vh,56px)}
+  .shead{margin-bottom:clamp(18px,3vh,30px)}
+  .shead__title{font-size:clamp(1.5rem,5vh,2.6rem)}
+  .shead__note{font-size:.55rem}
+  .contact__title{font-size:clamp(1.4rem,4.6vh,2.4rem)}
+  .mail{margin-top:clamp(18px,3vh,30px);font-size:clamp(.7rem,1.6vw,1rem)}
+  .contact__mark{width:80px;height:80px;opacity:.5}
 }
