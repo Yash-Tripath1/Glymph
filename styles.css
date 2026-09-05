@@ -397,20 +397,20 @@ body.menu-open .burger i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
   .sticker--code{right:1%;top:7%}
 }
 @media (max-width:860px){
-  .sticker--terminal{left:-3%;top:5%;transform:scale(.8)}
-  .sticker--code{right:-3%;top:4%;transform:scale(.8)}
-  .sticker--burst{left:-3%;top:72%;transform:scale(.78)}
-  .sticker--pixel{right:-3%;top:72%;transform:scale(.78)}
-  .sticker--est{right:0%;top:86%;transform:scale(.76)}
-  .sticker--label{left:0%;top:88%;transform:scale(.76)}
+  .sticker--terminal{left:2%;top:8%;transform:scale(.8)}
+  .sticker--code{right:2%;top:6%;transform:scale(.8)}
+  .sticker--burst{left:3%;top:68%;transform:scale(.78)}
+  .sticker--pixel{right:3%;top:68%;transform:scale(.78)}
+  .sticker--est{right:2%;top:82%;transform:scale(.76)}
+  .sticker--label{left:2%;top:84%;transform:scale(.76)}
   .dragme{display:none}
 }
 @media (max-width:560px){
   .sticker--code{display:none}
-  .sticker--terminal{top:3%;transform:scale(.72)}
+  .sticker--terminal{left:5%;top:4%;transform:scale(.72)}
   .sticker--est,.sticker--label{display:none}
-  .sticker--burst{top:70%;left:-5%;transform:scale(.68)}
-  .sticker--pixel{top:70%;right:-5%;transform:scale(.68)}
+  .sticker--burst{top:66%;left:2%;transform:scale(.68)}
+  .sticker--pixel{top:66%;right:2%;transform:scale(.68)}
 }
 
 /* ============================================================
