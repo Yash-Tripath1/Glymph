@@ -1,7 +1,8 @@
-# GLYMPH STUDIO — site
+# GLYMPH STUDIO
 
-Static site. **No build step, no JavaScript, no dependencies, no CDN.**
+> Too hard to build? Watch us.
 
+<<<<<<< HEAD
 ```
 index.html      the entire site
 styles.css      ~200 lines of CSS
@@ -11,10 +12,19 @@ logo/           brand assets (SVG + PNG)
 assets/team/    drop crew photos here — see PUT-PHOTOS-HERE.md
 vercel.json     response headers
 ```
+=======
+Glymph is an indie dev studio. We build tools, extensions, and micro-SaaS. fast, from scratch, no templates.
+>>>>>>> 7090fe5e5aae9f6a1232ba6a31b6dd567494bea4
 
-## Deploy
+## stack
+
+- Vanilla HTML/CSS/JS
+- Deployed on Vercel
+
+## run locally
 
 ```bash
+<<<<<<< HEAD
 npx vercel --prod
 ```
 No build command, output directory = root. Or drag the folder into vercel.com/new.
@@ -94,29 +104,17 @@ block and delete the `— nothing here yet.` line. That's the whole workflow:
   <p>one line on what it does</p>
   <p class="meta">browser extension · 2026</p>
 </article>
+=======
+git clone https://github.com/glymph-studio/glymph-studio-site
+cd glymph-studio-site
+open index.html
+>>>>>>> 7090fe5e5aae9f6a1232ba6a31b6dd567494bea4
 ```
 
-They lay themselves out in a responsive grid — no CSS work needed.
+## contributing
 
-## Design rules — keep it this way
+This is a private studio site. Not open for contributions.
 
-| | |
-|---|---|
-| Background | `#000` |
-| Text | `#ededed` / `#666` secondary / `#444` labels |
-| Dividers | 1px `#1a1a1a` — never white |
-| Type | JetBrains Mono, everywhere, monospace only |
-| Layout | left-aligned, 720px column, generous space |
-| Animation | **one** — the caret blink. Nothing else. |
+---
 
-**Never add:** gradients, glows, box-shadows, rounded "cards", emojis,
-animations, or placeholder content that isn't true.
-
-The credibility of this site comes from how little it claims. Every fake
-project or clever line costs more trust than it buys.
-
-## Swapping the thesis line
-
-The hero currently reads **"Too hard to build? Watch us."**
-The long version — *"We build things people say are too hard to build yet."* —
-lives in `index.html` as the meta description. Swap them if you prefer it up top.
+© 2026 Glymph Studio · [glymph.business@gmail.com](mailto:glymph.business@gmail.com)
