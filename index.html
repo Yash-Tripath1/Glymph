@@ -46,14 +46,45 @@
   <section class="section" id="projects">
     <h2 class="label">~/projects</h2>
 
-    <!-- ADD A PROJECT — delete the empty line below, paste this, fill it in:
-    <article class="project">
-      <h3><a href="https://example.com" target="_blank" rel="noopener">project-name</a></h3>
-      <p>one line on what it does</p>
-      <p class="meta">browser extension · 2026</p>
-    </article>
+    <div class="projects-grid">
+
+      <article class="project" data-tilt>
+        <a class="project__link" href="https://jwt.glymph1.vercel.app/" target="_blank" rel="noopener"
+           aria-label="JWT Decoder — open the tool">
+
+          <div class="project__bar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="project__path">~/jwt-decoder</span>
+            <span class="project__go" aria-hidden="true">↗</span>
+          </div>
+
+          <div class="project__screen" aria-hidden="true">
+            <p class="cmd"><span class="cmd__prompt">$</span> jwt decode eyJhbGciOiJIUzI1NiIsInR5cCI6…</p>
+            <pre class="out">alg  HS256
+iss  glymph.studio
+sub  usr_9f3k2l</pre>
+          </div>
+
+          <div class="project__body">
+            <h3>JWT Decoder</h3>
+            <p>Paste a token, read every claim in plain English. Decoded entirely in your browser.</p>
+            <p class="meta">jwt.glymph1.vercel.app · 2026</p>
+          </div>
+
+        </a>
+      </article>
+
+    </div>
+
+    <!--
+      ADD ANOTHER PROJECT — copy the <article class="project"> block above and swap:
+        href             live url
+        ~/path           window title
+        .cmd / .out      a real sample of its output
+        h3 / p / .meta   name, one line, "where · year"
+
+      The 3D tilt is automatic — any card with [data-tilt] picks it up.
     -->
-    <p class="empty">— nothing here yet. check back soon.</p>
   </section>
 
   <!-- ──────────────────────────── contact ─────────────────────────── -->
@@ -74,5 +105,7 @@
   </footer>
 
 </main>
+
+<script src="main.js" defer></script>
 </body>
 </html>

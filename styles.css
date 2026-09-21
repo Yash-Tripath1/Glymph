@@ -9,6 +9,7 @@
   --dim:#666;         /* secondary text    */
   --faint:#444;       /* labels, footers   */
   --line:#1a1a1a;     /* hairline dividers */
+  --accent:#FF3B2F;   /* the bolt — used once per card, nothing else */
 
   --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -118,20 +119,86 @@ a:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
 }
 
 /* ── projects ─────────────────────────────────────────────────────── */
-.empty{
-  color:var(--dim);
-  font-size:14px;
-}
+.empty{color:var(--dim);font-size:14px}
 
-/* grid for when projects exist — plain text blocks, no boxes or shadows */
 .projects-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:36px 32px;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:32px;
 }
-.project h3{font-size:15px;font-weight:500}
-.project p{color:var(--dim);font-size:13.5px;margin-top:6px;line-height:1.65}
-.project .meta{color:var(--faint);font-size:12px;margin-top:4px}
+
+/* perspective lives on the wrapper so the card can rotate inside it */
+.project{perspective:900px}
+
+.project__link{
+  display:block;
+  height:100%;
+  border:1px solid #262626;
+  padding:14px 16px 18px;
+  transform-style:preserve-3d;
+  transition:transform .3s cubic-bezier(.2,.9,.25,1), border-color .2s linear;
+}
+.project__link:hover{border-color:#3d3d3d}
+.project__link:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
+
+/* window bar */
+.project__bar{
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:12px;margin-bottom:14px;
+  border-bottom:1px solid var(--line);
+  font-size:12px;
+}
+.dots{display:flex;gap:5px;flex:none}
+.dots i{width:6px;height:6px;background:#2a2a2a;border-radius:50%;display:block}
+.project__path{flex:1;color:var(--dim)}
+.project__go{color:var(--faint);transition:color .2s linear}
+.project__link:hover .project__go{color:var(--fg)}
+
+/* the "screen" inside the window */
+.project__screen{
+  background:#070707;
+  border:1px solid #1c1c1c;
+  padding:12px 14px;
+  overflow:hidden;
+}
+.cmd{
+  font-size:12.5px;
+  color:var(--dim);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-bottom:8px;
+}
+.cmd__prompt{color:var(--accent);margin-right:.5em}
+.out{
+  margin:0;
+  font-family:inherit;
+  font-size:12.5px;
+  line-height:1.7;
+  color:var(--faint);
+  white-space:pre;
+}
+
+/* text under the screen */
+.project__body{margin-top:16px}
+.project__body h3{font-size:15px;font-weight:500;color:var(--fg)}
+.project__body p{color:var(--dim);font-size:13.5px;margin-top:6px;line-height:1.65}
+.project__body .meta{color:var(--faint);font-size:12px;margin-top:8px}
+
+/* layers sit at different depths, so tilting shows real parallax */
+.project__bar,.project__screen,.project__body{
+  transition:transform .3s cubic-bezier(.2,.9,.25,1);
+}
+.project__link:hover .project__bar{transform:translateZ(10px)}
+.project__link:hover .project__screen{transform:translateZ(20px)}
+.project__link:hover .project__body{transform:translateZ(30px)}
+
+@media (prefers-reduced-motion:reduce){
+  .project__link,.project__bar,.project__screen,.project__body{transition:none}
+  .project__link:hover .project__bar,
+  .project__link:hover .project__screen,
+  .project__link:hover .project__body{transform:none}
+}
 
 /* ── contact ──────────────────────────────────────────────────────── */
 .contact li{font-size:15px}
