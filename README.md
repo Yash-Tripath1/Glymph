@@ -20,15 +20,16 @@ No build command, output directory = root. Or drag the folder into vercel.com/ne
 
 ## The logo
 
-Inline SVG in `index.html` (hero, 34px + footer, 14px). It uses `fill="currentColor"`
-so CSS colour drives it — white in the hero, `#444` in the footer.
+Inline SVG in `index.html` (hero, 34px + footer, 16px). Two paths:
 
-One path, two subpaths: the G rectangles, then the bolt wound the *opposite* way.
-Under `fill-rule="nonzero"` the opposite winding cancels out, so **the bolt is a real
-hole, not a painted-over shape** — it stays transparent on any background.
+* the G — `fill="currentColor"`, so CSS colour drives it (white in the hero, `#444` in the footer)
+* the bolt — `fill="#FF3B2F"` with a `stroke="#000000" stroke-width="9"`
 
-Want the red bolt back? Add a second path after it:
-`<path d="M109.8 33.6 62.3 112.3H95.1L75.4 166.4 137.7 81.1H103.3L116.4 33.6Z" fill="#ff3b2f"/>`
+That black stroke is the important bit: it carves a gap where the bolt crosses the G,
+so the red reads as a separate shape instead of merging into the white.
+
+Going monochrome again? Delete the bolt's `fill` and add the bolt subpath to the G
+path with `fill-rule="nonzero"` — opposite winding knocks it out as a true hole.
 
 ## Favicons
 
@@ -38,8 +39,7 @@ logo/favicon-32.png   browser tab
 logo/favicon-180.png  apple touch icon
 logo/favicon-512.png  android / PWA
 ```
-Monochrome on black. The red-bolt original (`glymph-logo-appicon.png`) is still in
-`logo/` if you'd rather have colour in the tab.
+Black plate, white G, red bolt — the full mark. Checked at 32px; the bolt still reads.
 
 ## Adding a project
 

@@ -61,7 +61,7 @@ a:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
 
 /* ── logo mark ────────────────────────────────────────────────────── */
 .mark{width:34px;height:34px;display:block;color:var(--fg);margin-bottom:18px}
-.mark--sm{width:14px;height:14px;margin:0;flex:none;color:var(--faint)}
+.mark--sm{width:16px;height:16px;margin:0;flex:none;color:var(--faint)}
 
 /* ── hero ─────────────────────────────────────────────────────────── */
 .wordmark{
