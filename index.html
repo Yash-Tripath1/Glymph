@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Glymph Studio</title>
+<title>Glymph Studio — Too hard to build? Watch us.</title>
 <meta name="description" content="Glymph is an indie dev studio. We build tools, extensions, and micro-SaaS — fast, from scratch, no templates." />
 <meta name="color-scheme" content="dark" />
 <meta name="theme-color" content="#000000" />
@@ -49,8 +49,7 @@
     <div class="projects-grid">
 
       <article class="project" data-tilt>
-        <a class="project__link" href="https://jwt.glymph1.vercel.app/" target="_blank" rel="noopener"
-           aria-label="JWT Decoder — open the tool">
+        <div class="project__card">
 
           <div class="project__bar">
             <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -66,22 +65,49 @@ sub  usr_9f3k2l</pre>
           </div>
 
           <div class="project__body">
-            <h3>JWT Decoder</h3>
+            <h3><a class="project__title" href="https://jwt.glymph1.vercel.app/" target="_blank" rel="noopener">JWT Decoder</a></h3>
             <p>Paste a token, read every claim in plain English. Decoded entirely in your browser.</p>
-            <p class="meta">jwt.glymph1.vercel.app · 2026</p>
+            <p class="meta">jwt.glymph1.vercel.app · 2026 · <a class="project__src" href="https://github.com/Glymph-Studio/jwt" target="_blank" rel="noopener">src</a></p>
           </div>
 
-        </a>
+        </div>
+      </article>
+
+      <article class="project" data-tilt>
+        <div class="project__card">
+
+          <div class="project__bar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="project__path">~/procrastination-timer</span>
+            <span class="project__go" aria-hidden="true">↗</span>
+          </div>
+
+          <div class="project__screen" aria-hidden="true">
+            <p class="cmd"><span class="cmd__prompt">$</span> timer start --avoiding "homework"</p>
+            <pre class="out">elapsed  00:12:34
+shame    escalating
+crimes   5 logged</pre>
+          </div>
+
+          <div class="project__body">
+            <h3><a class="project__title" href="https://procrast.glymph1.vercel.app/" target="_blank" rel="noopener">Procrastination Timer</a></h3>
+            <p>Start the clock on what you're avoiding. It counts up, roasts you, and logs it to a global leaderboard.</p>
+            <p class="meta">procrast.glymph1.vercel.app · 2026 · <a class="project__src" href="https://github.com/Glymph-Studio/procrastination-timer" target="_blank" rel="noopener">src</a></p>
+          </div>
+
+        </div>
       </article>
 
     </div>
 
     <!--
-      ADD ANOTHER PROJECT — copy the <article class="project"> block above and swap:
-        href             live url
-        ~/path           window title
+      ADD ANOTHER PROJECT — copy an <article class="project"> block above and swap:
+        .project__path   window title
         .cmd / .out      a real sample of its output
-        h3 / p / .meta   name, one line, "where · year"
+        .project__title  name + live url   (stretches over the whole card)
+        p                one line
+        .meta            "host · year · src"
+        .project__src    repo url          (sits above the stretched link)
 
       The 3D tilt is automatic — any card with [data-tilt] picks it up.
     -->
@@ -93,7 +119,7 @@ sub  usr_9f3k2l</pre>
     <ul class="contact">
       <li><a href="mailto:glymph.business@gmail.com">glymph.business@gmail.com</a></li>
       <li>
-        <a href="https://github.com/glymph-studio" target="_blank" rel="noopener">github</a>
+        <a href="https://github.com/Glymph-Studio" target="_blank" rel="noopener">github</a>
         <span class="sep">·</span>
         <a href="https://www.linkedin.com/company/glymph-studio/" target="_blank" rel="noopener">linkedin</a>
       </li>
